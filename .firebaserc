@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "da-notes-cd591": {
+      "hosting": {
+        "DAKeep": [
+          "da-notes-mw"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "da-notes-cd591"
+  }
+}
