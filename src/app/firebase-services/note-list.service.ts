@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, doc, collectionData, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, doc, collectionData, onSnapshot, addDoc, updateDoc, deleteDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Note } from '../interfaces/note.interface';
 
@@ -35,6 +35,57 @@ export class NoteListService {
     //     console.log(element);        
     //   });
     // });
+  }
+
+   async deleteNote(coId: 'notes' | 'trash', docId: string) {
+    await deleteDoc(this.getSingleDocRef(coId, docId)).catch(err => {
+      console.log(err);
+    });
+  }
+  
+
+  async updateNote(note: Note) {
+    if (note.id) {
+      let docRef = this.getSingleDocRef(this.getColIdFromNote(note), note.id);
+      await updateDoc(docRef, this.getCleanJson(note)).catch(
+        (err) => {console.error(err);}
+        
+      )
+    }
+  }
+
+  getCleanJson(note:Note):{} {
+    return {
+      type: note.type,
+      titel: note.titel,
+      content: note.content,
+      marked: note.content
+    }
+  }
+
+  async addNote(item: Note, coId: "notes" | "trash"){
+    if (coId == "notes") {
+      await addDoc(this.getNotesRef(), item).catch(
+        (err) => {console.error(err)}
+      ).then(
+        (docRef) => {console.log("Document written with ID: ", docRef?.id);}
+      )
+    } else {
+      await addDoc(this.getTrashRef(), item).catch(
+        (err) => {console.error(err)}
+      ).then(
+        (docRef) => {console.log("Document written with ID: ", docRef?.id);}
+      )
+    }
+   
+  }
+
+  getColIdFromNote(note: Note) {
+    if(note.type == 'note') {
+      return 'notes';
+    } else {
+      return 'trash';
+    }
   }
 
   // const itemCollection = collection(this.firestore, 'items');
