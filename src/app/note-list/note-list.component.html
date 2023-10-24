@@ -24,8 +24,12 @@
             </button>
        </div>
     </div>
-    <div>
+    <div *ngIf="(status == 'notes')">
         <app-note *ngFor="let note of getList()" [note]="note"></app-note>
+        <!-- <app-note *ngFor="let note of this.noteService.items$ | async"></app-note> -->
+    </div>
+    <div *ngIf="(status == 'trash')">
+        <app-note *ngFor="let trashNote of getTrash()" [note]="trashNote"></app-note>
         <!-- <app-note *ngFor="let note of this.noteService.items$ | async"></app-note> -->
     </div>
 </div>

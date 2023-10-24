@@ -15,8 +15,17 @@ export class NoteComponent {
   constructor(private noteService: NoteListService){}
 
   changeMarkedStatus(){
-    this.note.marked = !this.note.marked;
+    if (!this.note.marked) {
+      this.note.marked = true;
+    }
+    else {
+      this.note.marked = false;
+    }
+    console.log(this.note.marked);
+    
     this.saveNote();
+    console.log(this.note.marked);
+
   }
 
   deleteHovered(){
@@ -35,20 +44,30 @@ export class NoteComponent {
   }
 
   moveToTrash(){
-    this.note.type = 'trash';
-    let docId = this.note.id;
-    this.noteService.addNote(this.note, "trash");
-    this.noteService.deleteNote();
+    if (this.note.id) {
+      this.note.type = 'trash';
+      let docId = this.note.id;
+      delete this.note.id;
+      this.noteService.addNote(this.note, "trash");
+      this.noteService.deleteNote("notes", docId);
+    }   
   }
 
   moveToNotes(){
-    this.note.type = 'note';
-    this.noteService.addNote();
-    this.noteService.deleteNote();
+    if (this.note.id) {
+      this.note.type = 'note';
+      let docId = this.note.id;
+      delete this.note.id;
+      this.noteService.addNote(this.note, "notes");
+      this.noteService.deleteNote("trash", docId);
+    }   
   }
 
   deleteNote(){
-
+    if (this.note.id) {
+      let docId = this.note.id;
+      this.noteService.deleteNote("trash", docId);
+    }   
   }
 
   saveNote(){

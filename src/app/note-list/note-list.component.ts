@@ -20,6 +20,10 @@ export class NoteListComponent {
     return this.noteService.normalNotes;
   }
 
+  getTrash(): Note[] {
+    return this.noteService.trashNotes;
+  }
+
   changeFavFilter(filter:"all" | "fav"){
     this.favFilter = filter;
   }
@@ -30,7 +34,7 @@ export class NoteListComponent {
     } else {
       this.status = "trash";
       this.favFilter = "all";
-    }
+    }       
   }
 
 

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, doc, collectionData, onSnapshot, addDoc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { Firestore, collection, doc, collectionData, onSnapshot, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Note } from '../interfaces/note.interface';
 
@@ -12,16 +12,18 @@ export class NoteListService {
   // items;
   normalNotes: Note[] = [];
   trashNotes: Note[] = [];
+  normalMarkedNotes: Note[] = [];
 
   unsubNotes;
   unsubTrash;
+  unsubMarkedNotes;
 
   firestore: Firestore = inject(Firestore);
 
   constructor() { 
     this.unsubNotes = this.subNotesList();
     this.unsubTrash = this.subTrashList();
-
+    this.unsubMarkedNotes = this.subMarkedNotesList();
     // this.unsubSingle = onSnapshot(this.getNotesRef(), (list) => {
     //   list.forEach(element => {
     //     console.log(element);
@@ -52,6 +54,7 @@ export class NoteListService {
         
       )
     }
+    
   }
 
   getCleanJson(note:Note):{} {
@@ -59,7 +62,7 @@ export class NoteListService {
       type: note.type,
       titel: note.titel,
       content: note.content,
-      marked: note.content
+      marked: note.marked
     }
   }
 
@@ -113,10 +116,21 @@ export class NoteListService {
   }
 
   subNotesList() {
-    return onSnapshot(this.getNotesRef(), (list) => {
+    const q = query(this.getNotesRef(), limit(100));
+    return onSnapshot(q, (list) => {
       this.normalNotes = [];
       list.forEach(element => {
         this.normalNotes.push(this.setNoteObject(element.data(), element.id));        
+      });
+    });
+  }
+
+  subMarkedNotesList() {
+    const q = query(this.getNotesRef(), where("marked", "==", true), limit(100));
+    return onSnapshot(q, (list) => {
+      this.normalNotes = [];
+      list.forEach(element => {
+        this.normalMarkedNotes.push(this.setNoteObject(element.data(), element.id));        
       });
     });
   }
@@ -133,6 +147,7 @@ export class NoteListService {
   ngonDestroy() {
     this.unsubNotes();
     this.unsubTrash();
+    this.unsubMarkedNotes();
     // this.items.unsubscribe();
 
   }
