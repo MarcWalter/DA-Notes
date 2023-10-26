@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, doc, collectionData, onSnapshot, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+// import { Observable } from 'rxjs';
 import { Note } from '../interfaces/note.interface';
 
 @Injectable({
@@ -51,10 +51,8 @@ export class NoteListService {
       let docRef = this.getSingleDocRef(this.getColIdFromNote(note), note.id);
       await updateDoc(docRef, this.getCleanJson(note)).catch(
         (err) => {console.error(err);}
-        
       )
     }
-    
   }
 
   getCleanJson(note:Note):{} {
@@ -128,7 +126,7 @@ export class NoteListService {
   subMarkedNotesList() {
     const q = query(this.getNotesRef(), where("marked", "==", true), limit(100));
     return onSnapshot(q, (list) => {
-      this.normalNotes = [];
+      this.normalMarkedNotes = [];
       list.forEach(element => {
         this.normalMarkedNotes.push(this.setNoteObject(element.data(), element.id));        
       });
